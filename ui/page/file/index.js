@@ -12,12 +12,14 @@ import { makeSelectCostInfoForUri, doFetchCostInfoForUri } from 'lbryinc';
 import { selectShowMatureContent, makeSelectClientSetting } from 'redux/selectors/settings';
 import { makeSelectFileRenderModeForUri } from 'redux/selectors/content';
 import { makeSelectCommentForCommentId } from 'redux/selectors/comments';
+import { makeSelectPlaylistForId } from 'lbry-redux';
 import FilePage from './view';
 
 const select = (state, props) => {
   const { search } = props.location;
   const urlParams = new URLSearchParams(search);
   const linkedCommentId = urlParams.get('lc');
+  const playlistId = urlParams.get('pl');
 
   return {
     linkedComment: makeSelectCommentForCommentId(linkedCommentId)(state),
@@ -28,6 +30,8 @@ const select = (state, props) => {
     fileInfo: makeSelectFileInfoForUri(props.uri)(state),
     renderMode: makeSelectFileRenderModeForUri(props.uri)(state),
     videoTheaterMode: makeSelectClientSetting(SETTINGS.VIDEO_THEATER_MODE)(state),
+    playlist: makeSelectPlaylistForId(playlistId)(state),
+    playlistId,
   };
 };
 

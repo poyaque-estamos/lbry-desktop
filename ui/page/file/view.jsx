@@ -8,6 +8,7 @@ import FileRenderInitiator from 'component/fileRenderInitiator';
 import FileRenderInline from 'component/fileRenderInline';
 import FileRenderDownload from 'component/fileRenderDownload';
 import RecommendedContent from 'component/recommendedContent';
+import PlaylistContent from 'component/playlistContent';
 import CommentsList from 'component/commentsList';
 
 export const PRIMARY_PLAYER_WRAPPER_CLASS = 'file-page__video-container';
@@ -24,6 +25,8 @@ type Props = {
   isMature: boolean,
   linkedComment: any,
   setPrimaryUri: (?string) => void,
+  playlist?: Playlist,
+  playlistId: string,
   videoTheaterMode: boolean,
 };
 
@@ -41,6 +44,8 @@ function FilePage(props: Props) {
     linkedComment,
     setPrimaryUri,
     videoTheaterMode,
+    playlist,
+    playlistId,
   } = props;
   const cost = costInfo ? costInfo.cost : null;
   const hasFileInfo = fileInfo !== undefined;
@@ -126,7 +131,8 @@ function FilePage(props: Props) {
         </div>
       </div>
 
-      {!videoTheaterMode && <RecommendedContent uri={uri} />}
+      {playlist && !videoTheaterMode && <PlaylistContent id={playlistId} uri={uri} />}
+      {!playlist && !videoTheaterMode && <RecommendedContent uri={uri} />}
     </Page>
   );
 }

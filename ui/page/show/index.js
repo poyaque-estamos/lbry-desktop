@@ -1,5 +1,6 @@
 import { DOMAIN } from 'config';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
 import { PAGE_SIZE } from 'constants/claim';
 import {
   doResolveUri,
@@ -10,6 +11,8 @@ import {
   normalizeURI,
   makeSelectClaimIsMine,
   makeSelectClaimIsPending,
+  doResolveCollection,
+  makeSelectPlaylistForId,
 } from 'lbry-redux';
 import { makeSelectChannelInSubscriptions } from 'redux/selectors/subscriptions';
 import { selectBlackListedOutpoints } from 'lbryinc';
@@ -18,6 +21,10 @@ import ShowPage from './view';
 const select = (state, props) => {
   const { pathname, hash, search } = props.location;
   const urlPath = pathname + hash;
+  const urlParams = new URLSearchParams(search);
+  const playlistId = urlParams.get('pl');
+  const playlistIndex = urlParams.get('index');
+
   // Remove the leading "/" added by the browser
   let path = urlPath.slice(1).replace(/:/g, '#');
 
@@ -60,11 +67,15 @@ const select = (state, props) => {
     title: makeSelectTitleForUri(uri)(state),
     claimIsMine: makeSelectClaimIsMine(uri)(state),
     claimIsPending: makeSelectClaimIsPending(uri)(state),
+    playlist: makeSelectPlaylistForId(playlistId)(state),
+    playlistId,
+    playlistIndex,
   };
 };
 
 const perform = dispatch => ({
   resolveUri: uri => dispatch(doResolveUri(uri)),
+  collectionResolve: claimId => dispatch(doResolveCollection(claimId)),
 });
 
-export default connect(select, perform)(ShowPage);
+export default withRouter(connect(select, perform)(ShowPage));

@@ -1,7 +1,7 @@
 // @flow
 import { DOMAIN } from 'config';
 import React, { useEffect } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Redirect, useLocation } from 'react-router-dom';
 import Spinner from 'component/spinner';
 import ChannelPage from 'page/channel';
 import FilePage from 'page/file';
@@ -10,6 +10,7 @@ import Button from 'component/button';
 import Card from 'component/common/card';
 import AbandonedChannelPreview from 'component/abandonedChannelPreview';
 import { formatLbryUrlForWeb } from 'util/url';
+import { Lbry } from 'lbry-redux';
 
 type Props = {
   isResolvingUri: boolean,
@@ -38,12 +39,41 @@ function ShowPage(props: Props) {
     claimIsMine,
     isSubscribed,
     claimIsPending,
+    collectionResolve,
+    playlistId,
+    playlist,
   } = props;
+  // const location = useLocation();
+  const urlParams = new URLSearchParams(location.search);
+  const plIndex = urlParams.get('index');
   const signingChannel = claim && claim.signing_channel;
   const canonicalUrl = claim && claim.canonical_url;
   const claimExists = claim !== null && claim !== undefined;
   const haventFetchedYet = claim === undefined;
   const isMine = claim && claim.is_my_output;
+  const claimId = claim && claim.claim_id;
+  const isCollection = claim && claim.value_type === 'collection';
+  const firstClaimIdInCollection = claim && claim.value_type === 'collection' && claim.value.claims[0];
+  const [collectionRedirectUrl, setCollectionRedirectUrl] = React.useState('');
+
+  console.log('collectionRedirectUrl', collectionRedirectUrl)
+
+  React.useEffect(() => {
+    async function doEffect() {
+      if (claimId && isCollection) {
+        const items =  await collectionResolve(claimId);
+        console.log('itemsEffect', items)
+        if (items && items.length) {
+          if (plIndex && items[plIndex]) {
+            setCollectionRedirectUrl(items[plIndex].url);
+          } else {
+            setCollectionRedirectUrl(items[0].url);
+          }
+        }
+      }
+    }
+    doEffect();
+  }, [claimId, isCollection, plIndex, collectionResolve, setCollectionRedirectUrl]);
 
   useEffect(() => {
     // @if TARGET='web'
@@ -74,11 +104,23 @@ function ShowPage(props: Props) {
     return <Redirect to={newUrl} />;
   }
 
+  if (claim && claim.value_type === 'collection' && collectionRedirectUrl) {
+    const claimId = claim.claim_id;
+    urlParams.set('pl', claimId)
+    const newUrl = formatLbryUrlForWeb(`${collectionRedirectUrl}?${urlParams.toString()}`);
+    return <Redirect to={newUrl} />;
+    // search it, pass the key
+  }
+
+
+
+  // if (claim && claim.value.claims
+
   let innerContent = '';
   if (!claim || (claim && !claim.name)) {
     innerContent = (
       <Page>
-        {(claim === undefined || isResolvingUri) && (
+        {(claim === undefined || isResolvingUri || claim.value_type === 'collection') && (
           <div className="main--empty">
             <Spinner />
           </div>

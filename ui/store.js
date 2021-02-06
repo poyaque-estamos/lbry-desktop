@@ -67,6 +67,7 @@ const tagsFilter = createFilter('tags', ['followedTags']);
 const subscriptionsFilter = createFilter('subscriptions', ['subscriptions']);
 const blockedFilter = createFilter('blocked', ['blockedChannels']);
 const settingsFilter = createBlacklistFilter('settings', ['loadedLanguages', 'language']);
+// const collectionsFilter = createFilter(''); persist
 const whiteListedReducers = [
   'comments',
   'fileInfo',
