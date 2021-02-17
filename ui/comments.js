@@ -6,6 +6,7 @@ const Comments = {
   enabled: Boolean(COMMENT_SERVER_API),
 
   moderation_block: (params: ModerationBlockParams) => fetchCommentsApi('moderation.Block', params),
+  moderation_block_list: (params: ModerationBlockParams) => fetchCommentsApi('moderation.BlockList', params),
   comment_list: (params: CommentListParams) => fetchCommentsApi('comment.List', params),
   comment_abandon: (params: CommentAbandonParams) => fetchCommentsApi('comment.Abandon', params),
 };
@@ -30,8 +31,8 @@ function fetchCommentsApi(method: string, params: {}) {
   };
 
   return fetch(url, options)
-    .then(res => res.json())
-    .then(res => res.result);
+    .then((res) => res.json())
+    .then((res) => res.result);
 }
 
 export default Comments;

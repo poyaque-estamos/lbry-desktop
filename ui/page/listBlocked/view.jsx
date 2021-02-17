@@ -1,5 +1,6 @@
 // @flow
 import React from 'react';
+import { Lbry } from 'lbry-redux';
 import ClaimList from 'component/claimList';
 import Page from 'component/page';
 import Card from 'component/common/card';
@@ -9,7 +10,10 @@ type Props = {
 };
 
 function ListBlocked(props: Props) {
-  const { uris } = props;
+  const { uris, myChannels, activeChannelClaim } = props;
+
+  const activeChannelName = activeChannelClaim && activeChannelClaim.name;
+  const activeChannelId = activeChannelClaim && acti;
 
   return (
     <Page>
