@@ -1,11 +1,11 @@
 import { connect } from 'react-redux';
 import PlaylistContent from './view';
-import { makeSelectUrlsForPlaylistId, makeSelectNameForPlaylistId } from 'lbry-redux';
+import { makeSelectUrlsForCollectionId, makeSelectNameForCollectionId } from 'lbry-redux';
 
 // this needs index of current playing
 const select = (state, props) => ({
-  collectionUrls: makeSelectUrlsForPlaylistId(props.id)(state),
-  playlistName: makeSelectNameForPlaylistId(props.id)(state),
+  collectionUrls: makeSelectUrlsForCollectionId(props.id)(state),
+  collectionName: makeSelectNameForCollectionId(props.id)(state),
 });
 
 const perform = dispatch => ({});

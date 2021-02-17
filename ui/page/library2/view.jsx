@@ -17,7 +17,10 @@ type Props = {
   fetchingMyPurchases: boolean,
   fetchingFileList: boolean,
   doPurchaseList: (number, number) => void,
-  playlists: any,
+  builtinCollections: Array<Collection>,
+  publishedCollections: Array<Collection>,
+  unpublishedCollections: Array<Collection>,
+  savedCollections: Array<Collection>,
 };
 
 function LibraryPage(props: Props) {
@@ -27,18 +30,24 @@ function LibraryPage(props: Props) {
     fetchingMyPurchases,
     fetchingFileList,
     doPurchaseList,
-    playlists,
+    builtinCollections,
+    publishedCollections,
+    unpublishedCollections,
+    savedCollections,
   } = props;
   const { location } = useHistory();
   const urlParams = new URLSearchParams(location.search);
   const page = Number(urlParams.get('page')) || 1;
   const hasDownloads = allDownloadedUrlsCount > 0 || (myPurchases && myPurchases.length > 0);
   const loading = fetchingFileList || fetchingMyPurchases;
+  console.log('pub', publishedCollections);
+
+  // also fetch and resolve all my collections
+  // when resolving collections, if resolved is newer, update local. if resovled is older, mark out of date / should update
 
   React.useEffect(() => {
     doPurchaseList(page, PURCHASES_PAGE_SIZE);
   }, [doPurchaseList, page]);
-  console.log('playlists', playlists);
 
   return (
     <Page>
@@ -48,17 +57,30 @@ function LibraryPage(props: Props) {
         </div>
       )}
 
-      {Object.values(playlists).map(list => {
-        console.log('list', list);
+      {Object.values(builtinCollections).map(list => {
         const items = list.items;
         const itemurls = Object.values(items).map(i => i.url);
-        // if (itemurls.length) {
-          return (
-            <>
-              <h1>{list.name}</h1>
-              <ClaimList tileLayout key={list.name} uris={itemurls} />
-            </>
-          );
+        if (!itemurls.length) return null;
+        return (
+          <>
+            <h1>{list.name}</h1>
+            <ClaimList tileLayout key={list.name} uris={itemurls} />
+          </>
+        );
+        // }
+      })}
+      {/* for each custom list, get the first item and render an item for that uri passing collectionId */}
+      {/* passing collectionId changes display of claim tiles/ claim preview to collection mode  */}
+
+      {Object.values(publishedCollections).map(list => {
+        const items = list.items;
+        const itemurls = Object.values(items).map(i => i.url);
+        return (
+          <>
+            <h1>{list.name}</h1>
+            <ClaimList tileLayout key={list.name} uris={itemurls} />
+          </>
+        );
         // }
       })}
       {!loading && !hasDownloads && (

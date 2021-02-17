@@ -14,6 +14,7 @@ import { parseURI } from 'lbry-redux';
 import FileProperties from 'component/fileProperties';
 import FileDownloadLink from 'component/fileDownloadLink';
 import ClaimRepostAuthor from 'component/claimRepostAuthor';
+import ClaimCollectionAddButton from 'component/claimCollectionAddButton';
 
 type Props = {
   uri: string,
@@ -165,11 +166,14 @@ function ClaimPreviewTile(props: Props) {
         <FileThumbnail thumbnail={thumbnailUrl} allowGifs>
           {!isChannel && (
             <React.Fragment>
-              {/* @if TARGET='app' */}
               <div className="claim-preview__hover-actions">
+                {/* @if TARGET='app' */}
                 <FileDownloadLink uri={canonicalUrl} hideOpenButton />
+                {/* @endif */}
+                {/* check if not on library page */}
+
+                <ClaimCollectionAddButton uri={uri} />
               </div>
-              {/* @endif */}
               <div className="claim-preview__file-property-overlay">
                 <FileProperties uri={uri} small />
               </div>

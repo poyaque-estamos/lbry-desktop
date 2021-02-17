@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import PlaylistAdd from 'component/playlistAdd';
+import CollectionAdd from 'component/collectionAdd';
 import { Modal } from 'modal/modal';
 
 type Props = {
@@ -8,12 +8,12 @@ type Props = {
   uri: string,
 };
 
-const ModalPlaylistAdd = (props: Props) => {
+const ModalCollectionAdd = (props: Props) => {
   const { doHideModal, uri } = props;
   return (
     <Modal isOpen type="card" onAborted={doHideModal}>
-      <PlaylistAdd uri={uri} closeModal={doHideModal} />
+      <CollectionAdd uri={uri} closeModal={doHideModal} />
     </Modal>
   );
 };
-export default ModalPlaylistAdd;
+export default ModalCollectionAdd;

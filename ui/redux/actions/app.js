@@ -15,6 +15,7 @@ import {
   makeSelectClaimIsMine,
   doPopulateSharedUserState,
   doFetchChannelListMine,
+  doFetchCollectionListMine,
   doClearPublish,
   doPreferenceGet,
   doClearSupport,
@@ -550,6 +551,7 @@ export function doSignIn() {
     // @if TARGET='web'
     dispatch(doBalanceSubscribe());
     dispatch(doFetchChannelListMine());
+    dispatch(doFetchCollectionListMine());
     // @endif
   };
 }

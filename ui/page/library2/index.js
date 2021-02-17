@@ -5,7 +5,10 @@ import {
   selectMyPurchases,
   selectIsFetchingMyPurchases,
   doPurchaseList,
-  selectMyPlaylists,
+  selectBuiltinCollections,
+  selectMyPublishedCollections,
+  selectMyUnpublishedCollections, // should probably distinguish types
+  selectSavedCollections,
 } from 'lbry-redux';
 
 import LibraryPage from './view';
@@ -15,7 +18,10 @@ const select = state => ({
   fetchingFileList: selectIsFetchingFileList(state),
   myPurchases: selectMyPurchases(state),
   fetchingMyPurchases: selectIsFetchingMyPurchases(state),
-  playlists: selectMyPlaylists(state),
+  builtinCollections: selectBuiltinCollections(state), // select
+  publishedCollections: selectMyPublishedCollections(state),
+  unpublishedCollections: selectMyUnpublishedCollections(state),
+  savedCollections: selectSavedCollections(state),
 });
 
 export default connect(select, {

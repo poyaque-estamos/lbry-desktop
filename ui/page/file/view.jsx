@@ -8,7 +8,7 @@ import FileRenderInitiator from 'component/fileRenderInitiator';
 import FileRenderInline from 'component/fileRenderInline';
 import FileRenderDownload from 'component/fileRenderDownload';
 import RecommendedContent from 'component/recommendedContent';
-import PlaylistContent from 'component/playlistContent';
+import CollectionContent from 'component/collectionContent';
 import CommentsList from 'component/commentsList';
 
 export const PRIMARY_PLAYER_WRAPPER_CLASS = 'file-page__video-container';
@@ -125,14 +125,14 @@ function FilePage(props: Props) {
         <div className="file-page__secondary-content">
           <div>
             {RENDER_MODES.FLOATING_MODES.includes(renderMode) && <FileTitle uri={uri} />}
-            <CommentsList uri={uri} linkedComment={linkedComment} />
+            {false && <CommentsList uri={uri} linkedComment={linkedComment} />}
           </div>
-          {videoTheaterMode && <RecommendedContent uri={uri} />}
+          {false && videoTheaterMode && <RecommendedContent uri={uri} />}
         </div>
       </div>
 
-      {playlist && !videoTheaterMode && <PlaylistContent id={playlistId} uri={uri} />}
-      {!playlist && !videoTheaterMode && <RecommendedContent uri={uri} />}
+      {playlist && !videoTheaterMode && <CollectionContent id={playlistId} uri={uri} />}
+      {!playlist && false && !videoTheaterMode && <RecommendedContent uri={uri} />}
     </Page>
   );
 }

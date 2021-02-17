@@ -1,7 +1,7 @@
 // @flow
 import { DOMAIN } from 'config';
 import React, { useEffect } from 'react';
-import { Redirect, useLocation } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import Spinner from 'component/spinner';
 import ChannelPage from 'page/channel';
 import FilePage from 'page/file';
@@ -10,7 +10,6 @@ import Button from 'component/button';
 import Card from 'component/common/card';
 import AbandonedChannelPreview from 'component/abandonedChannelPreview';
 import { formatLbryUrlForWeb } from 'util/url';
-import { Lbry } from 'lbry-redux';
 
 type Props = {
   isResolvingUri: boolean,
@@ -26,6 +25,10 @@ type Props = {
   title: string,
   claimIsMine: boolean,
   claimIsPending: boolean,
+  collectionId: string,
+  collection: Collection,
+  collectionIndex: number,
+  isResolvingCollection: boolean,
 };
 
 function ShowPage(props: Props) {
@@ -40,12 +43,14 @@ function ShowPage(props: Props) {
     isSubscribed,
     claimIsPending,
     collectionResolve,
-    playlistId,
-    playlist,
+    collectionId,
+    collection,
+    collectionIndex,
+    collectionUrls,
+    isResolvingCollection,
   } = props;
-  // const location = useLocation();
-  const urlParams = new URLSearchParams(location.search);
-  const plIndex = urlParams.get('index');
+  const { search } = location;
+
   const signingChannel = claim && claim.signing_channel;
   const canonicalUrl = claim && claim.canonical_url;
   const claimExists = claim !== null && claim !== undefined;
@@ -53,27 +58,16 @@ function ShowPage(props: Props) {
   const isMine = claim && claim.is_my_output;
   const claimId = claim && claim.claim_id;
   const isCollection = claim && claim.value_type === 'collection';
-  const firstClaimIdInCollection = claim && claim.value_type === 'collection' && claim.value.claims[0];
-  const [collectionRedirectUrl, setCollectionRedirectUrl] = React.useState('');
-
-  console.log('collectionRedirectUrl', collectionRedirectUrl)
+  const collectionClaimId = collectionId || (isCollection && claimId);
+  const resolvedCollection = collection && collection.id; // not null
+  let urlForCollectionIndex = collectionUrls && collectionUrls[collectionIndex];
 
   React.useEffect(() => {
-    async function doEffect() {
-      if (claimId && isCollection) {
-        const items =  await collectionResolve(claimId);
-        console.log('itemsEffect', items)
-        if (items && items.length) {
-          if (plIndex && items[plIndex]) {
-            setCollectionRedirectUrl(items[plIndex].url);
-          } else {
-            setCollectionRedirectUrl(items[0].url);
-          }
-        }
-      }
+    if (isCollection && !resolvedCollection) {
+      // if we have it and it's not null
+      collectionResolve(collectionClaimId);
     }
-    doEffect();
-  }, [claimId, isCollection, plIndex, collectionResolve, setCollectionRedirectUrl]);
+  }, [isCollection, resolvedCollection, collectionClaimId, collectionResolve]);
 
   useEffect(() => {
     // @if TARGET='web'
@@ -104,23 +98,25 @@ function ShowPage(props: Props) {
     return <Redirect to={newUrl} />;
   }
 
-  if (claim && claim.value_type === 'collection' && collectionRedirectUrl) {
+  // fis for claims
+  if (claim && claim.value_type === 'collection' && urlForCollectionIndex) {
     const claimId = claim.claim_id;
-    urlParams.set('pl', claimId)
-    const newUrl = formatLbryUrlForWeb(`${collectionRedirectUrl}?${urlParams.toString()}`);
+    const urlParams = new URLSearchParams(search);
+    urlParams.set('pl', claimId);
+    const newUrl = formatLbryUrlForWeb(`${urlForCollectionIndex}?${urlParams.toString()}`);
     return <Redirect to={newUrl} />;
     // search it, pass the key
   }
 
-
+  // if no items in collection, then what?
+  // if mature, then what?
 
   // if (claim && claim.value.claims
-
   let innerContent = '';
-  if (!claim || (claim && !claim.name)) {
+  if (!claim || (claim && !claim.name) || isResolvingCollection) {
     innerContent = (
       <Page>
-        {(claim === undefined || isResolvingUri || claim.value_type === 'collection') && (
+        {(claim === undefined || isResolvingUri || (claim && claim.value_type === 'collection')) && (
           <div className="main--empty">
             <Spinner />
           </div>

@@ -45,4 +45,4 @@ export const REMOVE_BLOCKED = 'remove_blocked';
 export const IMAGE_UPLOAD = 'image_upload';
 export const MOBILE_SEARCH = 'mobile_search';
 export const VIEW_IMAGE = 'view_image';
-export const PLAYLIST_ADD = 'playlist_add';
+export const COLLECTION_ADD = 'collection_add';

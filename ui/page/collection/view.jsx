@@ -1,33 +1,29 @@
 // @flow
 import * as ICONS from 'constants/icons';
 import React, { useEffect } from 'react';
-import { Lbry, parseURI, isNameValid } from 'lbry-redux';
 import ClaimList from 'component/claimList';
 import Page from 'component/page';
 import Button from 'component/button';
-import { formatLbryUrlForWeb } from 'util/url';
-import { useHistory } from 'react-router';
 import ClaimPreview from 'component/claimPreview';
 
 type Props = {
-  playlistId: string,
-  playlist: Playlist,
-  playlistUrls: Array<string>,
+  collectionId: string,
+  collection: Collection,
+  collectionUrls: Array<string>,
+  isResolvingCollection: boolean,
 };
 
 export default function SearchPage(props: Props) {
-  const {
-    playlistId,
-  } = props;
+  const { collectionId, collection, collectionUrls, isResolvingCollection } = props;
+  const nullCollection = collection === null;
   const shouldResolve = true; // placeholder
-  // if not playlist, resolve playlist.
-  // if playlist is published, resolve playlist to update it
+  // if not collection, resolve collection.
+  // if collection is published, resolve collection to update it
 
   useEffect(() => {
-    if (playlistId && shouldResolve) {
-
+    if (collectionId && shouldResolve) {
     }
-  }, [playlistId, shouldResolve]);
+  }, [collectionId, shouldResolve]);
 
   // some kind of header here?
   // pass up, down, delete controls through claim list
@@ -37,23 +33,13 @@ export default function SearchPage(props: Props) {
         {urlQuery && (
           <>
             <ClaimList
-              uris={playlistUrls}
+              uris={collectionUrls}
               loading={isSearching}
               headerAltControls={
                 <>
                   <span>{__('Find what you were looking for?')}</span>
-                  <Button
-                    button="alt"
-                    description={__('Yes')}
-                    onClick={() => onFeedbackPositive(urlQuery)}
-                    icon={ICONS.YES}
-                  />
-                  <Button
-                    button="alt"
-                    description={__('No')}
-                    onClick={() => onFeedbackNegative(urlQuery)}
-                    icon={ICONS.NO}
-                  />
+                  <Button button="alt" description={__('Yes')} onClick={() => alert('up')} icon={ICONS.YES} />
+                  <Button button="alt" description={__('No')} onClick={() => alert('down')} icon={ICONS.NO} />
                 </>
               }
             />

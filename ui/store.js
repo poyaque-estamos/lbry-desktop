@@ -127,6 +127,7 @@ const triggerSharedStateActions = [
   ACTIONS.SYNC_CLIENT_SETTINGS,
   // Disabled until we can overwrite preferences
   LBRY_REDUX_ACTIONS.SHARED_PREFERENCE_SET,
+  // LBRY_REDUX_ACTIONS.PLAYLIST_UPDATE
   // ACTIONS.SET_WELCOME_VERSION,
   // ACTIONS.SET_ALLOW_ANALYTICS,
 ];
@@ -157,6 +158,7 @@ const sharedStateFilters = {
   settings: { source: 'settings', property: 'sharedPreferences' },
   app_welcome_version: { source: 'app', property: 'welcomeVersion' },
   sharing_3P: { source: 'app', property: 'allowAnalytics' },
+  // collectionTest: { source: 'collections', property: 'myListsById' },
 };
 
 const sharedStateCb = ({ dispatch, getState }) => {

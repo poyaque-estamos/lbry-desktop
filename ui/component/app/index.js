@@ -5,7 +5,13 @@ import { selectGetSyncErrorMessage, selectSyncFatalError } from 'redux/selectors
 import { doFetchAccessToken, doUserSetReferrer } from 'redux/actions/user';
 import { selectUser, selectAccessToken, selectUserVerifiedEmail } from 'redux/selectors/user';
 import { selectUnclaimedRewards } from 'redux/selectors/rewards';
-import { doFetchChannelListMine, SETTINGS } from 'lbry-redux';
+import {
+  doFetchChannelListMine,
+  doFetchCollectionListMine,
+  SETTINGS,
+  selectMyCollectionIds, //published*
+  doResolveCollections,
+} from 'lbry-redux';
 import {
   makeSelectClientSetting,
   selectLanguage,
@@ -33,11 +39,13 @@ const select = state => ({
   isAuthenticated: selectUserVerifiedEmail(state),
   currentModal: selectModal(state),
   syncFatalError: selectSyncFatalError(state),
+  myCollectionIds: selectMyCollectionIds(state),
 });
 
 const perform = dispatch => ({
   fetchAccessToken: () => dispatch(doFetchAccessToken()),
   fetchChannelListMine: () => dispatch(doFetchChannelListMine()),
+  fetchCollectionListMine: () => dispatch(doFetchCollectionListMine()),
   setLanguage: language => dispatch(doSetLanguage(language)),
   signIn: () => dispatch(doSignIn()),
   requestDownloadUpgrade: () => dispatch(doDownloadUpgradeRequested()),
@@ -45,6 +53,7 @@ const perform = dispatch => ({
   getWalletSyncPref: () => dispatch(doGetWalletSyncPreference()),
   syncLoop: noInterval => dispatch(doSyncLoop(noInterval)),
   setReferrer: (referrer, doClaim) => dispatch(doUserSetReferrer(referrer, doClaim)),
+  collectionsResolve: claimIds => dispatch(doResolveCollections(claimIds)),
 });
 
 export default hot(connect(select, perform)(App));

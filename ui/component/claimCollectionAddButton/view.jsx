@@ -11,20 +11,28 @@ type Props = {
   fileAction?: boolean,
 };
 
-export default function PlaylistAddButton(props: Props) {
-  const { doOpenModal, uri, fileAction = true } = props;
+export default function CollectionAddButton(props: Props) {
+  const { doOpenModal, uri, fileAction } = props;
 
   // one form for claim actions, one for thumb
   return (
     <Button
-      button={fileAction ? undefined : 'alt'}
+      button={fileAction ? undefined : undefined}
       className={classnames({ 'button--file-action': fileAction })}
-      icon={ICONS.ADD}
+      icon={fileAction ? ICONS.ADD : ICONS.LIBRARY}
       iconSize={fileAction ? 22 : undefined}
-      label={__('Add to List --[button to support a claim]--')}
+      label={fileAction ? __('Add to List --[button to support a claim]--') : ''}
       requiresAuth={IS_WEB}
       title={__('Add this claim to a list')}
-      onClick={() => doOpenModal(MODALS.PLAYLIST_ADD, { uri })}
+      onClick={e => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (fileAction) {
+          doOpenModal(MODALS.COLLECTION_ADD, { uri });
+        } else {
+          // just add it to watch later?
+        }
+      }}
     />
   );
 }

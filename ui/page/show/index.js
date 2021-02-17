@@ -12,7 +12,9 @@ import {
   makeSelectClaimIsMine,
   makeSelectClaimIsPending,
   doResolveCollection,
-  makeSelectPlaylistForId,
+  makeSelectCollectionForId,
+  makeSelectUrlsForCollectionId,
+  makeSelectIsResolvingCollectionForId,
 } from 'lbry-redux';
 import { makeSelectChannelInSubscriptions } from 'redux/selectors/subscriptions';
 import { selectBlackListedOutpoints } from 'lbryinc';
@@ -22,8 +24,8 @@ const select = (state, props) => {
   const { pathname, hash, search } = props.location;
   const urlPath = pathname + hash;
   const urlParams = new URLSearchParams(search);
-  const playlistId = urlParams.get('pl');
-  const playlistIndex = urlParams.get('index');
+  const collectionId = urlParams.get('pl');
+  const collectionIndex = urlParams.get('plindex');
 
   // Remove the leading "/" added by the browser
   let path = urlPath.slice(1).replace(/:/g, '#');
@@ -56,6 +58,8 @@ const select = (state, props) => {
       props.history.replace(`/${path.slice(0, match.index)}`);
     }
   }
+  const claim = makeSelectClaimForUri(uri)(state);
+  const collectionId2 = claim && claim.value_type === 'collection' && claim.claim_id;
 
   return {
     uri,
@@ -67,9 +71,11 @@ const select = (state, props) => {
     title: makeSelectTitleForUri(uri)(state),
     claimIsMine: makeSelectClaimIsMine(uri)(state),
     claimIsPending: makeSelectClaimIsPending(uri)(state),
-    playlist: makeSelectPlaylistForId(playlistId)(state),
-    playlistId,
-    playlistIndex,
+    playlist: makeSelectCollectionForId(collectionId)(state),
+    collectionId: collectionId2 || collectionId,
+    collectionUrls: makeSelectUrlsForCollectionId(collectionId2 || collectionId)(state),
+    collectionIndex: collectionIndex || 0,
+    isResolvingCollection: makeSelectIsResolvingCollectionForId(collectionId2 || collectionId)(state),
   };
 };
 

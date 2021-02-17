@@ -60,6 +60,7 @@ type Props = {
   },
   fetchAccessToken: () => void,
   fetchChannelListMine: () => void,
+  fetchCollectionListMine: () => void,
   signIn: () => void,
   requestDownloadUpgrade: () => void,
   onSignedIn: () => void,
@@ -80,6 +81,8 @@ type Props = {
   syncEnabled: boolean,
   currentModal: any,
   syncFatalError: boolean,
+  myCollectionIds: Array<string>,
+  collectionsResolve: (Array<string>) => void,
 };
 
 function App(props: Props) {
@@ -88,6 +91,7 @@ function App(props: Props) {
     user,
     fetchAccessToken,
     fetchChannelListMine,
+    fetchCollectionListMine,
     signIn,
     autoUpdateDownloaded,
     isUpgradeAvailable,
@@ -106,6 +110,8 @@ function App(props: Props) {
     syncLoop,
     currentModal,
     syncFatalError,
+    myCollectionIds,
+    collectionsResolve,
   } = props;
 
   const appRef = useRef();
@@ -133,6 +139,8 @@ function App(props: Props) {
   const shouldHideNag = pathname.startsWith(`/$/${PAGES.EMBED}`) || pathname.startsWith(`/$/${PAGES.AUTH_VERIFY}`);
   const userId = user && user.id;
   const useCustomScrollbar = !IS_MAC;
+  const hasCollections = myCollectionIds && myCollectionIds.length;
+  const collectionString = (hasCollections && myCollectionIds.join(',')) || '';
 
   const shouldMigrateLanguage = LANGUAGE_MIGRATIONS[language];
 
@@ -220,8 +228,20 @@ function App(props: Props) {
 
     // @if TARGET='app'
     fetchChannelListMine(); // This is fetched after a user is signed in on web
+    fetchCollectionListMine();
     // @endif
-  }, [appRef, fetchAccessToken, fetchChannelListMine]);
+  }, [appRef, fetchAccessToken, fetchChannelListMine, fetchCollectionListMine]);
+
+  // if collectionList something, resolve collections (id)
+  // RESOLVE ALL >>
+  useEffect(() => {
+    // $FlowFixMe
+    if (collectionString.length) {
+      let collectionIds = collectionString.split(',');
+      collectionsResolve(collectionIds);
+    }
+    document.documentElement.setAttribute('theme', theme);
+  }, [collectionString, collectionsResolve]);
 
   useEffect(() => {
     // $FlowFixMe
